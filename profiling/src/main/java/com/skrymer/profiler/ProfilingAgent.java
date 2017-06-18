@@ -1,31 +1,36 @@
 package com.skrymer.profiler;
 
 import com.skrymer.profiler.ui.ProfilerUI;
-import javassist.*;
+import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.SuperMethodCall;
 
-import java.io.ByteArrayInputStream;
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
-import java.security.ProtectionDomain;
 
-public class ProfilingAgent implements ClassFileTransformer {
-  public static final String NO_ARG_CONSTRUCTOR_SIGNATURE = "()V";
+import static net.bytebuddy.matcher.ElementMatchers.any;
+import static net.bytebuddy.matcher.ElementMatchers.isDefaultConstructor;
+import static net.bytebuddy.matcher.ElementMatchers.nameContainsIgnoreCase;
 
-  /**
-   * Java agent entry point were instrumentation can be added
-   *
-   * @param agentArgument
-   * @param instrumentation
-   */
+public class ProfilingAgent {
+
   public static void premain(String agentArgument, Instrumentation instrumentation){
-    instrumentation.addTransformer(new ProfilingAgent());
+    new AgentBuilder.Default()
+        .with(new AgentListener())
+        .type(nameContainsIgnoreCase(getPackageToBeProfiled()))
+        .transform((builder, typeDescription, classLoader, javaModule) -> builder
+            .constructor(isDefaultConstructor())
+            .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.to(ConstructorInterceptor.class)))
+            .method(any())
+            .intercept(MethodDelegation.to(MethodInterceptor.class)
+                .andThen(SuperMethodCall.INSTANCE)
+            )
+        ).installOn(instrumentation);
+
     ProfilerUI.show();
     System.out.println("--------------------------------------------------------------");
     System.out.println("ProfilingAgent has been enabled - may the profiling be with you!!");
     System.out.println("Package to be profiled: " + getPackageToBeProfiled());
     System.out.println("--------------------------------------------------------------");
-
   }
 
   public static String getPackageToBeProfiled(){
@@ -36,55 +41,5 @@ public class ProfilingAgent implements ClassFileTransformer {
     }
 
     return packageToBeProfiled;
-  }
-
-  public byte[] transform(ClassLoader loader,
-                          String className,
-                          Class<?> classBeingRedefined,
-                          ProtectionDomain protectionDomain,
-                          byte[] classfileBuffer) throws IllegalClassFormatException {
-
-    if(className.contains(getPackageToBeProfiled())){
-      ClassPool pool = ClassPool.getDefault();
-      CtClass clazz = null;
-
-      try {
-        pool.importPackage("com.skrymer.profiler");
-        clazz = pool.makeClass(new ByteArrayInputStream(classfileBuffer));
-
-        addProfilingToConstructors(clazz);
-        addProfilingToMethods(clazz);
-
-        return clazz.toBytecode();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-      finally {
-        if (clazz != null) {
-          clazz.detach();
-        }
-      }
-    }
-
-    return classfileBuffer;
-  }
-
-  private void addProfilingToConstructors(CtClass clazz) throws Exception {
-    for(CtConstructor constructor : clazz.getConstructors()){
-      if(NO_ARG_CONSTRUCTOR_SIGNATURE.equals(constructor.getSignature())) {
-        constructor.insertBeforeBody("Profiler.instance().classCreated(" + "\"" + clazz.getName() + "\"" + ");");
-      }
-    }
-  }
-
-  private void addProfilingToMethods(CtClass clazz) throws Exception {
-    for(CtMethod method : clazz.getDeclaredMethods()){
-      if(!method.isEmpty()) {
-        method.addLocalVariable("duration", CtClass.longType);
-        method.insertBefore("duration = System.currentTimeMillis();");
-        method.insertAfter("duration = System.currentTimeMillis() - duration;");
-        method.insertAfter("Profiler.instance().methodInvocation(" + "\"" + clazz.getName() + "\"" + ", " + "\"" + method.getName() + "\"," + " duration);");
-      }
-    }
   }
 }

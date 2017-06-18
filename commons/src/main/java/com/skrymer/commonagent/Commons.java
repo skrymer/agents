@@ -42,7 +42,7 @@ public class Commons {
 
   public static class ToStringInterceptor {
     public static String intecept(@This Object thiz){
-      return ToStringBuilder.reflectionToString(thiz, ToStringStyle.SIMPLE_STYLE);
+      return "Muhammad";
     }
   }
 

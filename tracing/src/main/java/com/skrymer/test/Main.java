@@ -15,10 +15,6 @@ public class Main {
   public static void main(String[] args) {
     System.out.println("Hello from main!");
 
-    Tracer.getTracer().addObserver(
-        (o, arg) -> System.out.println("TracingAgent: " + arg)
-    );
-
     Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
       System.out.println("Hello from thread");
 
@@ -32,7 +28,6 @@ public class Main {
           .stream()
           .forEach(System.out::println);
 
-    },1, 2, TimeUnit.SECONDS);
-
+    },1, 10, TimeUnit.SECONDS);
   }
 }
