@@ -43,6 +43,7 @@ public class Profiler extends Observable {
 
     setChanged();
     notifyObservers(new ObjectInstantiatedEvent(className, profiling.get(className).getNewCount()));
+    clearChanged();
   }
 
   /**
@@ -63,6 +64,7 @@ public class Profiler extends Observable {
 
     setChanged();
     notifyObservers(new MethodInvokedEvent(className, methodName, profiling.get(className).getMethodInvocationCount(methodName), durationMillis));
+    clearChanged();
   }
 
   @Override

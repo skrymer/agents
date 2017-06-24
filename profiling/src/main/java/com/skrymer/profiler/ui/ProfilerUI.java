@@ -1,5 +1,7 @@
 package com.skrymer.profiler.ui;
 
+import com.jgoodies.looks.LookUtils;
+import com.jgoodies.looks.Options;
 import com.skrymer.profiler.Profiler;
 import com.skrymer.profiler.events.Event;
 import com.skrymer.profiler.events.ObjectInstantiatedEvent;
@@ -22,9 +24,21 @@ public class ProfilerUI implements Observer {
 
   private ProfilerUI(){
     Profiler.instance().addObserver(this);
+    configureUI();
     JFrame frame = buildFrame();
     frame.setContentPane(buildPanel());
     frame.setVisible(true);
+  }
+
+  private void configureUI() {
+    UIManager.put(Options.USE_SYSTEM_FONTS_APP_KEY, Boolean.TRUE);
+    Options.setDefaultIconSize(new Dimension(18, 18));
+
+    try {
+      UIManager.setLookAndFeel(Options.getSystemLookAndFeelClassName());
+    } catch (Exception e) {
+      System.err.println("Can't set look & feel:" + e);
+    }
   }
 
   private JFrame buildFrame() {

@@ -37,6 +37,5 @@ public class Main {
       someAwesomeClass.methodTwo();
       someAwesomeClass.methodThree();
     },0, 10, TimeUnit.SECONDS);
-
   }
 }
