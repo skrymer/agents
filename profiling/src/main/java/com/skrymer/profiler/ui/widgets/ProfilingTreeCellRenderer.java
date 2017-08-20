@@ -1,4 +1,4 @@
-package com.skrymer.profiler.ui;
+package com.skrymer.profiler.ui.widgets;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

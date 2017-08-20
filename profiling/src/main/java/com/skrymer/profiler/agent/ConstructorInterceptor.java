@@ -1,5 +1,6 @@
-package com.skrymer.profiler;
+package com.skrymer.profiler.agent;
 
+import com.skrymer.profiler.Profiler;
 import net.bytebuddy.implementation.bind.annotation.This;
 
 /**

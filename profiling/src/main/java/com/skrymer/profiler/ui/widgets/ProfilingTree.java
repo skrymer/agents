@@ -1,4 +1,4 @@
-package com.skrymer.profiler.ui;
+package com.skrymer.profiler.ui.widgets;
 
 import com.skrymer.profiler.events.Event;
 import com.skrymer.profiler.events.MethodInvokedEvent;
@@ -154,5 +154,4 @@ public class ProfilingTree extends JPanel {
   private boolean methodNodeExists(DefaultMutableTreeNode classNode, String methodName) {
     return findMethodNode(classNode, methodName).isPresent();
   }
-
 }

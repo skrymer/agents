@@ -5,7 +5,6 @@ import com.skrymer.test.tobeinstrumented.SomeOtherClass;
 import com.skrymer.test.tobeinstrumented.otherpackage.SomeAwesomeClass;
 import com.skrymer.profiler.Profiler;
 
-import java.util.Observable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -15,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
   public static void main(String[] args) {
     Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+      System.out.println("Hello from main");
       SomeClass someClass = new SomeClass("Sonni");
       someClass.methodOne();
       someClass.methodTwo();
@@ -36,6 +36,10 @@ public class Main {
       someAwesomeClass.methodOne();
       someAwesomeClass.methodTwo();
       someAwesomeClass.methodThree();
-    },0, 10, TimeUnit.SECONDS);
+    },1, 10, TimeUnit.SECONDS);
+
+    Profiler.instance().addObserver((o, arg) -> {
+      System.out.println("arg: " + arg + " o: " + o);
+    });
   }
 }

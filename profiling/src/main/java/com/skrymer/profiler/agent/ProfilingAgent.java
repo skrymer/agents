@@ -1,4 +1,4 @@
-package com.skrymer.profiler;
+package com.skrymer.profiler.agent;
 
 import com.skrymer.profiler.ui.ProfilerUI;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -14,6 +14,8 @@ import static net.bytebuddy.matcher.ElementMatchers.nameContainsIgnoreCase;
 public class ProfilingAgent {
 
   public static void premain(String agentArgument, Instrumentation instrumentation){
+    checkSysProps();
+
     new AgentBuilder.Default()
         .with(new AgentListener())
         .type(nameContainsIgnoreCase(getPackageToBeProfiled()))
@@ -26,20 +28,23 @@ public class ProfilingAgent {
             )
         ).installOn(instrumentation);
 
-    ProfilerUI.show();
     System.out.println("--------------------------------------------------------------");
     System.out.println("ProfilingAgent has been enabled - may the profiling be with you!!");
     System.out.println("Package to be profiled: " + getPackageToBeProfiled());
     System.out.println("--------------------------------------------------------------");
+
+    ProfilerUI.showUI();
   }
 
-  public static String getPackageToBeProfiled(){
-    String packageToBeProfiled = System.getProperty("packageToBeProfiled");
+  private static void checkSysProps() {
+    String packageToBeProfiled = getPackageToBeProfiled();
 
     if(packageToBeProfiled == null || packageToBeProfiled.isEmpty()){
       throw new IllegalArgumentException("System property packageToBeProfiled has to be defined!!");
     }
+  }
 
-    return packageToBeProfiled;
+  public static String getPackageToBeProfiled(){
+    return System.getProperty("packageToBeProfiled");
   }
 }

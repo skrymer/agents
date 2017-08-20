@@ -64,7 +64,7 @@
                             <mainClass>com.skrymer.test.Main</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Premain-Class>com.skrymer.profiler.ProfilingAgent</Premain-Class>
+                            <Premain-Class>com.skrymer.profiler.agent.ProfilingAgent</Premain-Class>
                             <Boot-Class-Path>java.agent.example-${project.version}-jar-with-dependencies.jar</Boot-Class-Path>
                         </manifestEntries>
                     </archive>

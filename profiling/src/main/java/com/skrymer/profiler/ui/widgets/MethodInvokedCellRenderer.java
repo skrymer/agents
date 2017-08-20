@@ -1,4 +1,4 @@
-package com.skrymer.profiler.ui;
+package com.skrymer.profiler.ui.widgets;
 
 import com.skrymer.profiler.events.MethodInvokedEvent;
 

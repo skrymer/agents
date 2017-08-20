@@ -1,4 +1,4 @@
-package com.skrymer.profiler.ui;
+package com.skrymer.profiler.ui.widgets;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -15,12 +15,12 @@ import java.awt.*;
  * Created by skrymer on 13/06/17.
  */
 public class ClassCountPieChart extends JPanel {
-  final DefaultPieDataset dataset;
+  final DefaultPieDataset dataSet;
 
   public ClassCountPieChart(){
-    dataset = new DefaultPieDataset();
+    dataSet = new DefaultPieDataset();
 
-    final JFreeChart chart = createChart(dataset);
+    final JFreeChart chart = createChart(dataSet);
     final ChartPanel chartPanel = new ChartPanel(chart);
 
     this.setLayout(new BorderLayout());
@@ -28,11 +28,10 @@ public class ClassCountPieChart extends JPanel {
   }
 
   public void objectInstantiated(String className, int count){
-    dataset.setValue(className, count);
+    dataSet.setValue(className, count);
   }
 
   private JFreeChart createChart(final PieDataset dataset) {
-
     final JFreeChart chart = ChartFactory.createPieChart3D(
         "Classes by count",
         dataset,
